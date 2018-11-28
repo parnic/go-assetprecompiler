@@ -25,9 +25,18 @@ const (
 
 func initMinify() *minify.M {
 	minifier := minify.New()
-	minifier.AddFunc("text/css", css.Minify)
-	minifier.AddFunc("text/js", js.Minify)
+	minifier.AddFunc(string(CSS), css.Minify)
+	minifier.AddFunc(string(JS), js.Minify)
 	return minifier
+}
+
+func supportedFileType(t FileType) bool {
+	switch t {
+	case CSS, JS:
+		return true
+	}
+
+	return false
 }
 
 func getBytes(config Config, minifier *minify.M) (map[FileType]*bytes.Buffer, error) {
@@ -46,7 +55,7 @@ func getBytes(config Config, minifier *minify.M) (map[FileType]*bytes.Buffer, er
 			}
 
 			if config.Minify {
-				if err = minifier.Minify("text/"+string(ext), buf[ext], file); err != nil {
+				if err = minifier.Minify(string(ext), buf[ext], file); err != nil {
 					return nil, err
 				}
 			} else {
@@ -86,11 +95,13 @@ func finalize(config Config, buf map[FileType]*bytes.Buffer) (map[FileType]*Comp
 				if config.Minify {
 					ext = ".min" + ext
 				}
+
 				dir := filepath.Join(config.OutputDir, string(key))
 				os.MkdirAll(dir, os.ModeDir)
+
 				destFile := filepath.Join(dir, "app-"+ret[key].Hash+ext)
-				ret[key].OutputPath = destFile
 				ioutil.WriteFile(destFile, bytes, 0644)
+				ret[key].OutputPath = destFile
 			}
 		}
 	}
@@ -107,13 +118,4 @@ func Compile(config Config) (map[FileType]*CompileResult, error) {
 	}
 
 	return finalize(config, buf)
-}
-
-func supportedFileType(t FileType) bool {
-	switch t {
-	case CSS, JS:
-		return true
-	}
-
-	return false
 }
