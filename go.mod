@@ -1,4 +1,4 @@
-module github.com/parnic
+module github.com/parnic/go-assetprecompiler
 
 go 1.12
 
