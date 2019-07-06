@@ -42,29 +42,32 @@ func supportedFileType(t FileType) bool {
 func getBytes(config Config, minifier *minify.M) (map[FileType]*bytes.Buffer, error) {
 	buf := make(map[FileType]*bytes.Buffer)
 
-	for _, file := range config.Files {
-		if file, err := os.Open(file); err == nil {
-			ext := FileType(filepath.Ext(file.Name())[1:])
-			if !supportedFileType(ext) {
-				fmt.Println("Unsupported file type:", file.Name())
-				continue
-			}
+	for _, pattern := range config.Files {
+		files, _ := filepath.Glob(pattern)
+		for _, file := range files {
+			if file, err := os.Open(file); err == nil {
+				ext := FileType(filepath.Ext(file.Name())[1:])
+				if !supportedFileType(ext) {
+					fmt.Println("Unsupported file type:", file.Name())
+					continue
+				}
 
-			if buf[ext] == nil {
-				buf[ext] = &bytes.Buffer{}
-			}
+				if buf[ext] == nil {
+					buf[ext] = &bytes.Buffer{}
+				}
 
-			if config.Minify {
-				if err = minifier.Minify(string(ext), buf[ext], file); err != nil {
-					return nil, err
+				if config.Minify {
+					if err = minifier.Minify(string(ext), buf[ext], file); err != nil {
+						return nil, err
+					}
+				} else {
+					if _, err = buf[ext].ReadFrom(file); err != nil {
+						return nil, err
+					}
 				}
 			} else {
-				if _, err = buf[ext].ReadFrom(file); err != nil {
-					return nil, err
-				}
+				return nil, err
 			}
-		} else {
-			return nil, err
 		}
 	}
 
