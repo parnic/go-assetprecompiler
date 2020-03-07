@@ -8,4 +8,6 @@ type Config struct {
 	Minify bool
 	// OutputDir if specified will cause the result to be written to this directory
 	OutputDir string
+	// FilePrefix is a string that will be prefixed on the files if OutputDir is specified
+	FilePrefix string
 }

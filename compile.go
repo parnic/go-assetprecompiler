@@ -104,7 +104,7 @@ func finalize(config Config, buf map[FileType]*bytes.Buffer) (map[FileType]*Comp
 					return nil, err
 				}
 
-				destFile := filepath.Join(dir, "app-"+ret[key].Hash+ext)
+				destFile := filepath.Join(dir, config.FilePrefix+ret[key].Hash+ext)
 				if err := ioutil.WriteFile(destFile, bytes, 0644); err != nil {
 					return nil, err
 				}
