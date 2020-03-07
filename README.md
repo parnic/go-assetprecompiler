@@ -35,6 +35,7 @@ func main() {
 		},
 		Minify:    true,
 		OutputDir: "assets/",
+		FilePrefix: "app-",
 	})
 }
 ```
@@ -46,6 +47,7 @@ Config key | Use
 Files | An array of strings representing paths to files you want compiled
 Minify | Bool, optionally minify the files with https://github.com/tdewolff/minify
 OutputDir | String, the directory you'd like to write the compiled files to (with trailing slash)
+FilePrefix | String, what, if anything, should be prefixed onto the output filenames
 
 Note that if an output dir is specified, "css" and "js" subdirectories will be used/created to hold the resulting files. Leaving it blank will cause it to not write any files to disk.
 
