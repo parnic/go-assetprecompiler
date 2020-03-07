@@ -100,10 +100,14 @@ func finalize(config Config, buf map[FileType]*bytes.Buffer) (map[FileType]*Comp
 				}
 
 				dir := filepath.Join(config.OutputDir, string(key))
-				os.MkdirAll(dir, 0755)
+				if err := os.MkdirAll(dir, 0755); err != nil {
+					return nil, err
+				}
 
 				destFile := filepath.Join(dir, "app-"+ret[key].Hash+ext)
-				ioutil.WriteFile(destFile, bytes, 0644)
+				if err := ioutil.WriteFile(destFile, bytes, 0644); err != nil {
+					return nil, err
+				}
 				ret[key].OutputPath = destFile
 			}
 		}
